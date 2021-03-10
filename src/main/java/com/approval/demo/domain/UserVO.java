@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class UserVO {
 	@JsonIgnore
-	private Integer id;
+	private Integer userNo;
 
 	private String userId;
 

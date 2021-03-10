@@ -4,10 +4,15 @@
 <mapper namespace="com.approval.demo.mapper.UserMapper">
 
 	<select id="getUser" parameterType="com.approval.demo.domain.UserVO" resultType="com.approval.demo.domain.UserVO">
-		SELECT id, user_id userId, password, reg_time regTime, role
+		SELECT user_no userNo, user_id userId, password, reg_time regTime, role
 		  FROM approval.user
-		 where 1=1
-		   and user_id = #{userId, jdbcType=VARCHAR}
+		 where user_id = #{userId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getUserByNo" parameterType="Integer" resultType="com.approval.demo.domain.UserVO">
+		SELECT user_no userNo, user_id userId, password, reg_time regTime, role
+		  FROM approval.user
+		 where user_no = #{userNo, jdbcType=INTEGER}
 	</select>
 
 	

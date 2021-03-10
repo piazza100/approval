@@ -1,8 +1,5 @@
 package com.approval.demo.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +19,7 @@ import com.approval.demo.exception.ApprovalException;
 import com.approval.demo.service.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 	@Autowired
 	UserService userService;
@@ -33,42 +30,7 @@ public class UserController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
-	@RequestMapping(value = "/a", method = RequestMethod.GET)
-	public ResponseEntity<?> a(UserVO userVO) throws Exception {
-		Map resultMap = new HashMap();
-		resultMap.put("result", "/a");
-		return ResponseEntity.ok(resultMap);
-	}
-	
-	@RequestMapping(value = "/user/a", method = RequestMethod.GET)
-	public ResponseEntity<?> prvA(UserVO userVO) throws Exception {
-		Map resultMap = new HashMap();
-		resultMap.put("result", "/user/a");
-		return ResponseEntity.ok(resultMap);
-	}
-	
-	@RequestMapping(value = "/user/request", method = RequestMethod.GET)
-	public ResponseEntity<?> request(UserVO userVO) throws Exception {
-		Map resultMap = new HashMap();
-		resultMap.put("result", "/user/request");
-		return ResponseEntity.ok(resultMap);
-	}
-
-	@RequestMapping(value = "/admin", method = RequestMethod.GET)
-	public ResponseEntity<?> prvAdminA(UserVO userVO) throws Exception {
-		Map resultMap = new HashMap();
-		resultMap.put("result", "/admin");
-		return ResponseEntity.ok(resultMap);
-	}
-	
-	@RequestMapping(value = "/admin/confirm", method = RequestMethod.GET)
-	public ResponseEntity<?> confirm(UserVO userVO) throws Exception {
-		Map resultMap = new HashMap();
-		resultMap.put("result", "/admin/confirm");
-		return ResponseEntity.ok(resultMap);
-	}
-
-	@RequestMapping(value = "/user/login", method = RequestMethod.POST)
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody UserVO userVO) throws AuthenticationException {
 		final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userVO.getUserId(), userVO.getPassword()));
 		SecurityContextHolder.getContext().setAuthentication(authentication);

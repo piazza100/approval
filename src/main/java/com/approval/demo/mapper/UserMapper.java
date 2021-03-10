@@ -6,7 +6,8 @@ import com.approval.demo.domain.UserVO;
 
 public interface UserMapper {
 
-
 	public UserVO getUser(UserVO userVO) throws SQLException;
+
+	public UserVO getUserByNo(Integer userNo) throws SQLException;
 
 }

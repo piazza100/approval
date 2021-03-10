@@ -32,15 +32,8 @@ public class ApprovalException extends RuntimeException {
 		ACCESS_DENIED_EXCEPTION("E1003", "권한이 충분하지 않습니다."),
 		NULL_USER_INFO_EXCEPTION("E1004", "회원정보 등록이 필요합니다."),
 		NULL_PARAM_EXCEPTION("E1009", "입력값이 부족합니다."),
-		USER_DUPLICATE_KEY_EXCEPTION("E1010", "비트시그널 회원으로 이미 가입하셨습니다."),
-		USER_MDN_DUPLICATE_EXCEPTION("E1011", "비트시그널 회원으로 이미 가입하셨습니다."),
-		ID_RULE_EXCEPTION("E1012", "아이디를 확인해주세요."),
-		PASSWORD_RULE_EXCEPTION("E1013", "비밀번호를 확인해주세요."),
-		EMAIL_RULE_EXCEPTION("E1016", "이메일을 확인해주세요."),
-		CURRENT_PASSWORD_EXCEPTION("E1015", "비밀번호를 확인해주세요."),
 		INVALID_ACCESS_EXCEPTION("E0034", "유효하지 않은 접속입니다."),
 		EMAIL_USER_EXCEPTION("E1002", "일치하는 회원 정보가 없습니다."),
-		USE_EXPIRE_EXCEPTION("E1016", "이용권이 만료되었습니"),
 		;
 
 		private String key;
