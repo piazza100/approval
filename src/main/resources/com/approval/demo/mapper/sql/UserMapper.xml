@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.approval.demo.mapper.UserMapper">
+
+	<select id="getUser" parameterType="com.approval.demo.domain.UserVO" resultType="com.approval.demo.domain.UserVO">
+		SELECT id, user_id userId, password, reg_time regTime, role
+		  FROM approval.user
+		 where 1=1
+		   and user_id = #{userId, jdbcType=VARCHAR}
+	</select>
+
+	
+</mapper>
