@@ -66,3 +66,16 @@ public class UserVO implements UserDetails {
 		return true;
 	}
 }
+
+//
+//CREATE TABLE `approval`.`user` (
+//`user_no` int(11) NOT NULL AUTO_INCREMENT,
+//`user_id` varchar(45) NOT NULL,
+//`password` varchar(200) NOT NULL,
+//`role` varchar(45) DEFAULT NULL,
+//`reg_time` datetime NOT NULL,
+//`mod_time` datetime NOT NULL,
+//PRIMARY KEY (`user_no`),
+//UNIQUE KEY `user_id_UNIQUE` (`user_id`)
+//) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+//;

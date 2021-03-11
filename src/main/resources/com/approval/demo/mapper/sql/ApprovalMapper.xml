@@ -4,13 +4,13 @@
 <mapper namespace="com.approval.demo.mapper.ApprovalMapper">
 
 	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvaNo, user_no userNo, admin_user_no adminUserNo, title, content, state, reg_time regTime, mod_time modTime
+		SELECT approval_no approvaNo, user_no userNo, title, content, state, reg_time regTime, mod_time modTime
 		  FROM approval.approval
 		 where approval_no = #{approvalNo, jdbcType=VARCHAR}
 	</select>
 
 	<select id="getApprovalListByUserNo" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvaNo, user_no userNo, admin_user_no adminUserNo, title, content, state, reg_time regTime, mod_time modTime
+		SELECT approval_no approvaNo, user_no userNo, title, content, state, reg_time regTime, mod_time modTime
 		  FROM approval.approval
 		 where 1=1
 		   and user_no = #{userNo, jdbcType=VARCHAR}
@@ -23,14 +23,30 @@
 	<insert id="addApproval" parameterType="com.approval.demo.domain.ApprovalVO" >
 		INSERT INTO approval.approval
 		(	
-			user_no, admin_user_no, title, content, state, reg_time regTime, mod_time modTime
+			user_no, title, content, reg_time, mod_time
 		)
 		VALUES
 		( 
 			#{userNo}
-			,#{adminUserNo}
 			,#{title}
 			,#{content}
+			,now()
+			,now()
+		 )
+		<selectKey resultType="int" keyProperty="approvaNo" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<insert id="addApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO" >
+		INSERT INTO approval.approval_line
+		(	
+			approval_no, user_no, state, reg_time, mod_time
+		)
+		VALUES
+		( 
+			#{approvaNo}
+			,#{userNo}
 			,'R'
 			,now()
 			,now()
@@ -40,9 +56,9 @@
 	<update id="updateApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
 		<trim prefix="SET" suffixOverrides=",">
-			<if test="state != null">	
+			<!-- <if test="state != null">	
 			state = #{state},
-			</if>
+			</if> -->
 			<if test="title != null">	
 			title = #{title},
 			</if>
@@ -52,6 +68,22 @@
 			mod_time = now(),
 		</trim>
 		where approval_no = #{approvaNo}
+	</update>
+
+	<update id="closeApproval" parameterType="com.approval.demo.domain.ApprovalVO">
+		UPDATE approval.approval
+			end_time = now(),
+			mod_time = now()
+		where approval_no = #{approvaNo}
+	</update>
+
+	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO">
+		UPDATE approval.approval_line
+		<trim prefix="SET" suffixOverrides=",">
+			state = #{state},
+		</trim>
+			mod_time = now()
+		where approval_line_no = #{approvalLineNo}
 	</update>
 
 </mapper>

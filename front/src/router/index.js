@@ -5,6 +5,9 @@ import Login from '@/components/Login'
 import Main from '@/components/Main'
 import List from '@/components/List'
 import View from '@/components/View'
+import Write from '@/components/Write'
+
+
 
 Vue.use(Router)
 
@@ -43,6 +46,12 @@ export default new Router({
       path: '/list',
       name: 'List',
       component: List,
+      beforeEnter: requireAuth()
+    },
+    {
+      path: '/write',
+      name: 'Write',
+      component: Write,
       beforeEnter: requireAuth()
     },
     {

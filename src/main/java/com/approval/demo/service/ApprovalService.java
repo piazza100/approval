@@ -3,10 +3,12 @@ package com.approval.demo.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.approval.demo.domain.ApprovalLineVO;
 import com.approval.demo.domain.ApprovalVO;
 import com.approval.demo.domain.UserVO;
 import com.approval.demo.exception.ApprovalException;
@@ -32,7 +34,9 @@ public class ApprovalService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void addApproval(ApprovalVO approvalVO) throws Exception {
 		approvalMapper.addApproval(approvalVO);
-
+		for(ApprovalLineVO approvalLineVO : approvalVO.getApprovalLineVOList()) {
+			approvalMapper.addApprovalLine(approvalLineVO);
+		}
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
@@ -40,13 +44,13 @@ public class ApprovalService {
 		approvalMapper.updateApproval(approvalVO);
 	}
 
-	public void checkByRole(ApprovalVO approvalVO) throws Exception {
+	public void isValidApprovalState(ApprovalVO approvalVO) throws Exception {
 		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if ((UserVO.USER_ROLE.USER).equals(userVO.getRole())
-				&& !((ApprovalVO.STATE.REQUEST).equals(approvalVO.getState())
-						|| (ApprovalVO.STATE.REJECT).equals(approvalVO.getState()))) {
-			throw new ApprovalException(ApprovalException.Code.ACCESS_DENIED_EXCEPTION);
-		}
+//		if ((UserVO.USER_ROLE.USER).equals(userVO.getRole())
+//				&& !((ApprovalLineVO.STATE.REQUEST).equals(approvalVO.getState())
+//						|| (ApprovalLineVO.STATE.REJECT).equals(approvalVO.getState()))) {
+//			throw new ApprovalException(ApprovalException.Code.ACCESS_DENIED_EXCEPTION);
+//		}
 	}
 
 }

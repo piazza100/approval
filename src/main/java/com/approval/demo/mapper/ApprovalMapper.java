@@ -3,6 +3,7 @@ package com.approval.demo.mapper;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.approval.demo.domain.ApprovalLineVO;
 import com.approval.demo.domain.ApprovalVO;
 
 public interface ApprovalMapper {
@@ -12,6 +13,8 @@ public interface ApprovalMapper {
 	public List<ApprovalVO> getApprovalListByUserNo(ApprovalVO approvalVO) throws SQLException;
 
 	public void addApproval(ApprovalVO approvalVO) throws SQLException;
+	
+	public void addApprovalLine(ApprovalLineVO approvalLineVO) throws SQLException;
 	
 	public void updateApproval(ApprovalVO approvalVO) throws SQLException;
 

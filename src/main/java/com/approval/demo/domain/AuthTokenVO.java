@@ -1,5 +1,8 @@
 package com.approval.demo.domain;
 
+import lombok.Data;
+
+@Data
 public class AuthTokenVO {
 	private String token;
 
