@@ -13,10 +13,31 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.validation.BindException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+	@ExceptionHandler(value = { BindException.class})
+	public Object processValidationError(BindException ex) {
+		BindingResult bindingResult = ex.getBindingResult();
+
+		StringBuilder builder = new StringBuilder();
+		for (FieldError fieldError : bindingResult.getFieldErrors()) {
+			builder.append("[");
+			builder.append(fieldError.getField());
+			builder.append("](은)는 ");
+			builder.append(fieldError.getDefaultMessage());
+			builder.append(" 입력된 값: [");
+			builder.append(fieldError.getRejectedValue());
+			builder.append("]");
+		}
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("code", ApprovalException.Code.NULL_PARAM_EXCEPTION.getKey());
+		map.put("message", builder.toString());
+		return new ResponseEntity<Map<String, String>>(map, HttpStatus.BAD_REQUEST);
+	}
 
 	@org.springframework.web.bind.annotation.ExceptionHandler(ApprovalException.class)
 	public final ResponseEntity<Map<String, Object>> handleBaseException(ApprovalException ex, WebRequest request) {

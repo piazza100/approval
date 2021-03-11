@@ -41,7 +41,7 @@ public class ApprovalService {
 	}
 
 	public void checkByRole(ApprovalVO approvalVO) throws Exception {
-		UserVO userVO = this.userMapper.getUserByNo(approvalVO.getUserNo());
+		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if ((UserVO.USER_ROLE.USER).equals(userVO.getRole())
 				&& !((ApprovalVO.STATE.REQUEST).equals(approvalVO.getState())
 						|| (ApprovalVO.STATE.REJECT).equals(approvalVO.getState()))) {

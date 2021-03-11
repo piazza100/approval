@@ -40,17 +40,17 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (resultUserVO == null || resultUserVO.getUserId() == null || resultUserVO.getPassword() == null) {
 			throw new UsernameNotFoundException("Invalid username or password.");
 		}
-		return new org.springframework.security.core.userdetails.User(resultUserVO.getUserId(), resultUserVO.getPassword(), this.getAuthority(resultUserVO));
+//		return new org.springframework.security.core.userdetails.User(resultUserVO.getUserId(), resultUserVO.getPassword(), this.getAuthority(resultUserVO));
+		return resultUserVO;
 	}
 
-	private List<SimpleGrantedAuthority> getAuthority(UserVO user) {
+	/*private List<SimpleGrantedAuthority> getAuthority(UserVO user) {
 		if ("USER".equals(user.getRole())) {
 			return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
 		} else {
-//			return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));
 			return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
 		}
-	}
+	}*/
 
 	private void aa() {
 		String password = "123qwe!@#";
