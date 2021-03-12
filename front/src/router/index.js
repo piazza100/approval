@@ -36,12 +36,12 @@ export default new Router({
       name: 'Login',
       component: Login
     },
-    {
-      path: '/main',
-      name: 'Main',
-      component: Main,
-      beforeEnter: requireAuth()
-    },
+    // {
+    //   path: '/main',
+    //   name: 'Main',
+    //   component: Main,
+    //   beforeEnter: requireAuth()
+    // },
     {
       path: '/list',
       name: 'List',

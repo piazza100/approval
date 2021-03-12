@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.approval.demo.domain.ApprovalLineVO;
 import com.approval.demo.domain.ApprovalVO;
+import com.approval.demo.exception.ApprovalException;
 import com.approval.demo.service.ApprovalService;
 
 @RestController
@@ -60,13 +61,12 @@ public class ApprovalController {
 	@PostMapping(value = "/update")
 	public ResponseEntity<?> update(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
-		this.approvalService.isValidApprovalState(approvalVO);
 		this.approvalService.updateApproval(approvalVO);
 		resultMap.put("result", "Y");
 		return ResponseEntity.ok(resultMap);
 	}
 
-	@PostMapping(value = "/admin/update/state")
+	@PostMapping(value = "/admin/update")
 	public ResponseEntity<?> adminUpdate(@RequestBody @Valid ApprovalLineVO approvalLineVO) throws Exception {
 		Map resultMap = new HashMap();
 		this.approvalService.updateApprovalLine(approvalLineVO);

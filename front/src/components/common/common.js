@@ -15,7 +15,11 @@ export const common = {
 			content:'',
 			title:'',
 
-			msg: '',
+			userNo:'',
+			adminUserNo:'',
+			approvalList:'',
+
+			// msg: '',
 
 		}
 	},

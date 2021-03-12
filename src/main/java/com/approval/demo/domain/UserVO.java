@@ -16,15 +16,15 @@ import lombok.Data;
 
 @Data
 public class UserVO implements UserDetails {
-	@JsonIgnore
 	private Integer userNo;
-
 	private String userId;
 
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 
+	@JsonIgnore
 	private Date regTime;
+	@JsonIgnore
 	private String role;
 
 	public static final class USER_ROLE {
@@ -32,6 +32,7 @@ public class UserVO implements UserDetails {
 		public static final String ADMIN = "ADMIN";
 	}
 
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		if ("USER".equals(this.role)) {
@@ -41,41 +42,33 @@ public class UserVO implements UserDetails {
 		}
 	}
 
+	@JsonIgnore
 	@Override
 	public String getUsername() {
 		return this.userId;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
 		return true;
 	}
 }
-
-//
-//CREATE TABLE `approval`.`user` (
-//`user_no` int(11) NOT NULL AUTO_INCREMENT,
-//`user_id` varchar(45) NOT NULL,
-//`password` varchar(200) NOT NULL,
-//`role` varchar(45) DEFAULT NULL,
-//`reg_time` datetime NOT NULL,
-//`mod_time` datetime NOT NULL,
-//PRIMARY KEY (`user_no`),
-//UNIQUE KEY `user_id_UNIQUE` (`user_id`)
-//) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//;

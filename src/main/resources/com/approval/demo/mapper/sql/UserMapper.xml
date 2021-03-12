@@ -15,5 +15,10 @@
 		 where user_no = #{userNo, jdbcType=INTEGER}
 	</select>
 
+	<select id="getAdminList" parameterType="com.approval.demo.domain.UserVO" resultType="com.approval.demo.domain.UserVO">
+		SELECT user_no userNo, user_id userId
+		  FROM approval.user
+		 where role = 'ADMIN'
+	</select>
 	
 </mapper>

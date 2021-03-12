@@ -1,5 +1,7 @@
 package com.approval.demo.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,10 @@ public class UserService {
 	public UserVO getUser(UserVO userVO) throws Exception {
 		UserVO result = userMapper.getUser(userVO);
 		return result;
+	}
+
+	public List<UserVO> getAdminList() throws Exception {
+		return userMapper.getAdminList();
 	}
 
 }

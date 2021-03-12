@@ -10,28 +10,29 @@
 		  FROM APPROVAL.APPROVAL A
 		      ,APPROVAL.APPROVAL_LINE B
 		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
-	       AND A.USER_NO = #{userNo, jdbcType=VARCHAR}
-	       and A.approval_no = #{approvalNo, jdbcType=VARCHAR}
-	     ORDER BY B.SEQ
+	       AND A.USER_NO = #{userNo}
+	       and A.approval_no = #{approvalNo}
+	     ORDER BY a.approval_no desc, B.SEQ
 	</select>
 
 	<!-- <select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
 		SELECT approval_no approvalNo, user_no userNo, title, content, reg_time regTime, mod_time modTime, end_time
 		  FROM approval.approval
-		 where user_no = #{userNo, jdbcType=VARCHAR}
+		 where user_no = #{userNo}
 		   <if test="approvalNo != null">	
-		   and approval_no = #{approvalNo, jdbcType=VARCHAR}
+		   and approval_no = #{approvalNo}
 		   </if>
 	</select> -->
 
 	<!-- 결재진행 목록 -->
-	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvalNo, user_no userNo, title, content, reg_time regTime, mod_time modTime, end_time
-		  FROM approval.approval
-		 where user_no = #{userNo, jdbcType=VARCHAR}
-		   <if test="approvalNo != null">	
-		   and approval_no = #{approvalNo, jdbcType=VARCHAR}
-		   </if>
+	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
+				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
+		  FROM APPROVAL.APPROVAL A
+		      ,APPROVAL.APPROVAL_LINE B
+		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
+	       AND A.USER_NO = #{userNo}
+	     ORDER BY a.approval_no desc, B.SEQ
 	</select>
 
 	<resultMap id="approvalJoinList" type="com.approval.demo.domain.ApprovalVO">
@@ -62,7 +63,7 @@
 		 WHERE A.END_TIME IS NULL
 		       AND A.APPROVAL_NO = B.APPROVAL_NO
 		       AND B.STATE = 'REQUEST'
-		       AND B.USER_NO = #{userNo, jdbcType=VARCHAR}
+		       AND B.USER_NO = #{userNo}
 	</select>
 
 	<insert id="addApproval" parameterType="com.approval.demo.domain.ApprovalVO" useGeneratedKeys="true" keyProperty="approvalNo" keyColumn="approval_no">
@@ -110,7 +111,7 @@
 		where approval_no = #{approvalNo}
 	</update>
 
-	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
+	<!-- <update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
 		UPDATE approval.approval_line
 		   set state = #{state},
 			   mod_time = now()
@@ -121,21 +122,58 @@
 		  <if test="seq != null">	
 		  and seq = #{seq}
 		  </if>
+	</update> -->
+
+	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
+		UPDATE approval.approval_line
+		   set state = #{state},
+			   mod_time = now()
+		where approval_no = #{approvalNo}
+		  and user_no = #{userNo}
+		  and state = 'REQUEST'
 	</update>
 
+	<update id="updateApprovalLineReadyToRequest" parameterType="com.approval.demo.domain.ApprovalLineVO">
+		UPDATE approval.approval_line
+		   set state = #{state},
+			   mod_time = now()
+		where approval_no = #{approvalNo}
+		  and seq = #{seq}
+		  and state = 'READY'
+	</update>
+
+ 	<delete id="deleteApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO">
+		DELETE FROM approval.approval_line 
+		 WHERE approval_no = #{approvalNo}
+	</delete>
+	
 	<update id="closeApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
-			end_time = now(),
-			mod_time = now()
-		where approval_no = #{approvalNo}
+		   SET end_time = now(),
+			   mod_time = now()
+		 where approval_no = #{approvalNo}
 	</update>
 	
 	<select id="getNextSeq" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
 	<![CDATA[
-		SELECT max(seq) seq
+		SELECT min(seq) seq
 		  FROM APPROVAL.APPROVAL_LINE 
-		 where approval_no = #{approvalNo, jdbcType=VARCHAR}
-		   and state <>  'CONFIRM'
+		 where approval_no = #{approvalNo}
+		   and state <> 'CONFIRM'
 	]]>
+	</select>
+	
+	<select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM APPROVAL.APPROVAL A
+			   ,APPROVAL.APPROVAL_LINE B
+		 where A.approval_no = #{approvalNo}
+		   and a.approval_no  = b.approval_no 
+		   and (a.end_time is not null or b.state in ('CONFIRM', 'REJECT'))
+	]]>
+		   <if test="userNo != null">	
+		   and B.user_no = #{userNo}
+		   </if>
 	</select>
 </mapper>

@@ -18,11 +18,17 @@ public interface ApprovalMapper {
 	
 	public void addApprovalLine(ApprovalLineVO approvalLineVO) throws SQLException;
 	
+	public void deleteApprovalLine(ApprovalVO approvalVO) throws SQLException;
+	
 	public void updateApproval(ApprovalVO approvalVO) throws SQLException;
 
-	public void updateApprovalLine(ApprovalLineVO approvalLineVO) throws SQLException;
+	public Integer updateApprovalLine(ApprovalLineVO approvalLineVO) throws SQLException;
+	
+	public Integer updateApprovalLineReadyToRequest(ApprovalLineVO approvalLineVO) throws SQLException;
 	
 	public void closeApproval(ApprovalVO approvalVO) throws SQLException;
+	
+	public Integer getValidApprovalCount(ApprovalVO approvalVO) throws SQLException;
 	
 	public Integer getNextSeq(ApprovalVO approvalVO) throws SQLException;
 	

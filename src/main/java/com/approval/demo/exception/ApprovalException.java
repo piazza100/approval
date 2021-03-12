@@ -33,7 +33,8 @@ public class ApprovalException extends RuntimeException {
 		NULL_USER_INFO_EXCEPTION("E1004", "회원정보 등록이 필요합니다."),
 		NULL_PARAM_EXCEPTION("E1009", "입력값이 부족합니다."),
 		INVALID_ACCESS_EXCEPTION("E0034", "유효하지 않은 접속입니다."),
-		EMAIL_USER_EXCEPTION("E1002", "일치하는 회원 정보가 없습니다."),
+		NULL_DATA_EXCEPTION("E1005", "일치하는 정보가 없습니다."),
+		DO_NOT_UPDATE_EXCEPTION("E1006", "수정할 수 없습니다."),
 		;
 
 		private String key;

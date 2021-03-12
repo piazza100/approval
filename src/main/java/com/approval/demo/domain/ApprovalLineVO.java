@@ -14,7 +14,7 @@ public class ApprovalLineVO {
 	private Integer seq;
 
 	@NotEmpty
-	@Pattern(regexp = "^DELETE$|^REQUEST$|^CONFIRM$|^REJECT$")
+	@Pattern(regexp = "^REQUEST$|^CONFIRM$|^DELETE$|^REJECT$")
 	private String state;
 
 	private Date regTime;

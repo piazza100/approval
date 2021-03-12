@@ -1,5 +1,9 @@
 package com.approval.demo.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,4 +57,14 @@ public class UserController {
 		}
 		return ResponseEntity.ok(new AuthTokenVO(token));
 	}
+	
+
+	@GetMapping(value = "/admin/list")
+	public ResponseEntity<?> adminList() throws Exception {
+		Map resultMap = new HashMap();
+		List<UserVO> list = this.userService.getAdminList();
+		resultMap.put("result", list);
+		return ResponseEntity.ok(resultMap);
+	}
+
 }
