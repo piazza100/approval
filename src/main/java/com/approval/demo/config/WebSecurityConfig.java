@@ -56,8 +56,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                .authorizeRequests()
                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                .antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
-               .antMatchers("/api/approval/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                .antMatchers("/api/approval/admin/**").hasAnyAuthority("ROLE_ADMIN")
+               .antMatchers("/api/approval/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                .antMatchers(
                        "/robots.txt",
                        "/engine.io/",

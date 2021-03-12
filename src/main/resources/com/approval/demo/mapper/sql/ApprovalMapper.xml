@@ -3,24 +3,69 @@
 
 <mapper namespace="com.approval.demo.mapper.ApprovalMapper">
 
-	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvaNo, user_no userNo, title, content, state, reg_time regTime, mod_time modTime
-		  FROM approval.approval
-		 where approval_no = #{approvalNo, jdbcType=VARCHAR}
+	<!-- 결재진행 목록 상세 -->
+	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
+				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
+		  FROM APPROVAL.APPROVAL A
+		      ,APPROVAL.APPROVAL_LINE B
+		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
+	       AND A.USER_NO = #{userNo, jdbcType=VARCHAR}
+	       and A.approval_no = #{approvalNo, jdbcType=VARCHAR}
+	     ORDER BY B.SEQ
 	</select>
 
-	<select id="getApprovalListByUserNo" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvaNo, user_no userNo, title, content, state, reg_time regTime, mod_time modTime
+	<!-- <select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
+		SELECT approval_no approvalNo, user_no userNo, title, content, reg_time regTime, mod_time modTime, end_time
 		  FROM approval.approval
-		 where 1=1
-		   and user_no = #{userNo, jdbcType=VARCHAR}
-		    or admin_user_no = #{userNo, jdbcType=VARCHAR}
+		 where user_no = #{userNo, jdbcType=VARCHAR}
+		   <if test="approvalNo != null">	
+		   and approval_no = #{approvalNo, jdbcType=VARCHAR}
+		   </if>
+	</select> -->
+
+	<!-- 결재진행 목록 -->
+	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
+		SELECT approval_no approvalNo, user_no userNo, title, content, reg_time regTime, mod_time modTime, end_time
+		  FROM approval.approval
+		 where user_no = #{userNo, jdbcType=VARCHAR}
 		   <if test="approvalNo != null">	
 		   and approval_no = #{approvalNo, jdbcType=VARCHAR}
 		   </if>
 	</select>
 
-	<insert id="addApproval" parameterType="com.approval.demo.domain.ApprovalVO" >
+	<resultMap id="approvalJoinList" type="com.approval.demo.domain.ApprovalVO">
+	    <id property="approvalNo" column="approvalNo" />
+	    <result property="userNo" column="userNo" />
+	    <result property="title" column="title" />
+	    <result property="content" column="content" />
+	    <result property="regTime" column="regTime" />
+	    <result property="modTime" column="modTime" />
+	    <result property="endTime" column="endTime" />
+	  
+	    <collection property="approvalLineVOList" ofType="com.approval.demo.domain.ApprovalLineVO">
+	         <result property="approvalNo" column="approvalNo" />
+	         <result property="userNo" column="adminUserNo" />
+	         <result property="state" column="state" />
+	         <result property="seq" column="seq" />
+	         <result property="regTime" column="lineRegTime" />
+	         <result property="modTime" column="lineModTime" />
+	    </collection>
+	</resultMap>
+
+	<!-- 결재요청 목록 -->
+	<select id="getApprovalRequestList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
+				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
+		  FROM APPROVAL.APPROVAL A
+		      ,APPROVAL.APPROVAL_LINE B
+		 WHERE A.END_TIME IS NULL
+		       AND A.APPROVAL_NO = B.APPROVAL_NO
+		       AND B.STATE = 'REQUEST'
+		       AND B.USER_NO = #{userNo, jdbcType=VARCHAR}
+	</select>
+
+	<insert id="addApproval" parameterType="com.approval.demo.domain.ApprovalVO" useGeneratedKeys="true" keyProperty="approvalNo" keyColumn="approval_no">
 		INSERT INTO approval.approval
 		(	
 			user_no, title, content, reg_time, mod_time
@@ -33,21 +78,19 @@
 			,now()
 			,now()
 		 )
-		<selectKey resultType="int" keyProperty="approvaNo" order="AFTER">
-			SELECT LAST_INSERT_ID()
-		</selectKey>
 	</insert>
 
-	<insert id="addApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO" >
+	<insert id="addApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO" >
 		INSERT INTO approval.approval_line
 		(	
-			approval_no, user_no, state, reg_time, mod_time
+			approval_no, user_no, seq, state, reg_time, mod_time
 		)
 		VALUES
 		( 
-			#{approvaNo}
+			#{approvalNo}
 			,#{userNo}
-			,'R'
+			,#{seq}
+			,#{state}
 			,now()
 			,now()
 		 )
@@ -56,9 +99,6 @@
 	<update id="updateApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
 		<trim prefix="SET" suffixOverrides=",">
-			<!-- <if test="state != null">	
-			state = #{state},
-			</if> -->
 			<if test="title != null">	
 			title = #{title},
 			</if>
@@ -67,23 +107,35 @@
 			</if>
 			mod_time = now(),
 		</trim>
-		where approval_no = #{approvaNo}
+		where approval_no = #{approvalNo}
+	</update>
+
+	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
+		UPDATE approval.approval_line
+		   set state = #{state},
+			   mod_time = now()
+		where approval_no = #{approvalNo}
+		  <if test="userNo != null">	
+		  and user_no = #{userNo}
+		  </if>
+		  <if test="seq != null">	
+		  and seq = #{seq}
+		  </if>
 	</update>
 
 	<update id="closeApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
 			end_time = now(),
 			mod_time = now()
-		where approval_no = #{approvaNo}
+		where approval_no = #{approvalNo}
 	</update>
-
-	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO">
-		UPDATE approval.approval_line
-		<trim prefix="SET" suffixOverrides=",">
-			state = #{state},
-		</trim>
-			mod_time = now()
-		where approval_line_no = #{approvalLineNo}
-	</update>
-
+	
+	<select id="getNextSeq" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<![CDATA[
+		SELECT max(seq) seq
+		  FROM APPROVAL.APPROVAL_LINE 
+		 where approval_no = #{approvalNo, jdbcType=VARCHAR}
+		   and state <>  'CONFIRM'
+	]]>
+	</select>
 </mapper>

@@ -9,25 +9,23 @@ import lombok.Data;
 
 @Data
 public class ApprovalLineVO {
-	private Integer approvalLineNo;
-	private Integer approvaNo;
+	private Integer approvalNo;
 	private Integer userNo;
-
-//	private String title;
-//	private String content;
+	private Integer seq;
 
 	@NotEmpty
-	@Pattern(regexp = "^R$|^D$|^C$|^J$")
+	@Pattern(regexp = "^DELETE$|^REQUEST$|^CONFIRM$|^REJECT$")
 	private String state;
 
 	private Date regTime;
 	private Date modTime;
 
 	public static final class STATE {
-		public static final String REQUEST = "R";
-		public static final String CONFIRM = "C";
-		public static final String REJECT = "J";
-		public static final String DELETE = "D";
+		public static final String READY = "READY";
+		public static final String REQUEST = "REQUEST";
+		public static final String CONFIRM = "CONFIRM";
+		public static final String REJECT = "REJECT";
+		public static final String DELETE = "DELETE";
 	}
 
 }

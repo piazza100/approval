@@ -8,15 +8,14 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.approval.demo.domain.ApprovalLineVO;
 import com.approval.demo.domain.ApprovalVO;
-import com.approval.demo.domain.UserVO;
 import com.approval.demo.service.ApprovalService;
 
 @RestController
@@ -29,8 +28,24 @@ public class ApprovalController {
 	@GetMapping(value = "/list")
 	public ResponseEntity<?> list(ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
-		List<ApprovalVO> list = this.approvalService.getApprovalListByUserNo(approvalVO);
+		List<ApprovalVO> list = this.approvalService.getApprovalList(approvalVO);
 		resultMap.put("result", list);
+		return ResponseEntity.ok(resultMap);
+	}
+
+	@GetMapping(value = "/admin/list")
+	public ResponseEntity<?> adminList(ApprovalVO approvalVO) throws Exception {
+		Map resultMap = new HashMap();
+		List<ApprovalVO> list = this.approvalService.getApprovalRequestList(approvalVO);
+		resultMap.put("result", list);
+		return ResponseEntity.ok(resultMap);
+	}
+
+	@GetMapping(value = "/view")
+	public ResponseEntity<?> view(ApprovalVO approvalVO) throws Exception {
+		Map resultMap = new HashMap();
+		ApprovalVO view = this.approvalService.getApproval(approvalVO);
+		resultMap.put("result", view);
 		return ResponseEntity.ok(resultMap);
 	}
 
@@ -43,22 +58,18 @@ public class ApprovalController {
 	}
 
 	@PostMapping(value = "/update")
-	public ResponseEntity<?> update(@Valid ApprovalVO approvalVO) throws Exception {
+	public ResponseEntity<?> update(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
-//		if(StringUtils.isEmpty(approvalVO.getTitle()) || StringUtils.isEmpty(approvalVO.getContent())) {
-//			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
-//		}
 		this.approvalService.isValidApprovalState(approvalVO);
 		this.approvalService.updateApproval(approvalVO);
 		resultMap.put("result", "Y");
 		return ResponseEntity.ok(resultMap);
 	}
 
-	@PostMapping(value = "/admin/update")
-	public ResponseEntity<?> adminUpdate(@Valid ApprovalVO approvalVO) throws Exception {
+	@PostMapping(value = "/admin/update/state")
+	public ResponseEntity<?> adminUpdate(@RequestBody @Valid ApprovalLineVO approvalLineVO) throws Exception {
 		Map resultMap = new HashMap();
-//		UserVO user = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		this.approvalService.updateApproval(approvalVO);
+		this.approvalService.updateApprovalLine(approvalLineVO);
 		resultMap.put("result", "Y");
 		return ResponseEntity.ok(resultMap);
 	}
