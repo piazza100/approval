@@ -42,8 +42,8 @@ public class ApprovalController {
 		return ResponseEntity.ok(resultMap);
 	}
 
-	@GetMapping(value = "/view")
-	public ResponseEntity<?> view(ApprovalVO approvalVO) throws Exception {
+	@GetMapping(value = "/getApproval")
+	public ResponseEntity<?> getApproval(ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
 		ApprovalVO view = this.approvalService.getApproval(approvalVO);
 		resultMap.put("result", view);
@@ -51,7 +51,7 @@ public class ApprovalController {
 	}
 
 	@PostMapping(value = "/add")
-	public ResponseEntity<?> add(@RequestBody ApprovalVO approvalVO) throws Exception {
+	public ResponseEntity<?> add(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
 		this.approvalService.addApproval(approvalVO);
 		resultMap.put("result", "Y");
@@ -62,6 +62,17 @@ public class ApprovalController {
 	public ResponseEntity<?> update(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
 		Map resultMap = new HashMap();
 		this.approvalService.updateApproval(approvalVO);
+		resultMap.put("result", "Y");
+		return ResponseEntity.ok(resultMap);
+	}
+
+	@PostMapping(value = "/delete")
+	public ResponseEntity<?> delete(@RequestBody ApprovalVO approvalVO) throws Exception {
+		Map resultMap = new HashMap();
+		if (approvalVO.getApprovalNo() == null) {
+			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
+		}
+		this.approvalService.deleteApproval(approvalVO);
 		resultMap.put("result", "Y");
 		return ResponseEntity.ok(resultMap);
 	}

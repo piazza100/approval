@@ -1,6 +1,6 @@
 <template>
 	<div>
-		Copyright 2021. piazza. All rights reserved.
+		Copyright 2021. piazza100. All rights reserved.
 	</div>
 </template>
 

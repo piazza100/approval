@@ -5,12 +5,11 @@
 
 	<!-- 결재진행 목록 상세 -->
 	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
-		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
 				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
 		  FROM APPROVAL.APPROVAL A
 		      ,APPROVAL.APPROVAL_LINE B
 		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
-	       AND A.USER_NO = #{userNo}
 	       and A.approval_no = #{approvalNo}
 	     ORDER BY a.approval_no desc, B.SEQ
 	</select>
@@ -26,7 +25,7 @@
 
 	<!-- 결재진행 목록 -->
 	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
-		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
 				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
 		  FROM APPROVAL.APPROVAL A
 		      ,APPROVAL.APPROVAL_LINE B
@@ -105,6 +104,9 @@
 			</if>
 			<if test="content != null">	
 			content = #{content},
+			</if>
+			<if test="endTime != null">	
+			end_time = now(),
 			</if>
 			mod_time = now(),
 		</trim>

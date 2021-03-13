@@ -3,10 +3,10 @@
 
 		<!-- <a href="/main">결재 메인</a> -->
 		<a href="/list"> | 결재 목록</a>
-		<!-- <a href="/view"> | 결재 문서</a> -->
-		<a href="/write"> | 결재 문서 등록</a>
-		<a href="/login" v-show="this.$store.getters.isExpire !== false"><span>{{loginMessage}}</span></a></span>
-		<a href="" @click.prevent="logout" v-show="this.$store.getters.isExpire === false"><span> | {{loginMessage}}</span></a>
+		<!-- <a href="/view"> | 결재 내용</a> -->
+		<a href="/write" v-if="$store.getters.role === 'ROLE_USER'"> | 결재 문서 등록</a>
+		<a href="/login" v-show="isLogin !== false"><span>{{loginMessage}}</span></a></span>
+		<a href="" @click.prevent="logout" v-show="isLogin === false"><span> | {{loginMessage}}</span></a>
 
 		({{roleMessage}})
 
@@ -17,7 +17,9 @@
 
 export default {
   data() {
-    return {};
+    return {
+    	isLogin : this.$store.getters.isExpire
+    };
   },
   created() {
   },
@@ -35,7 +37,7 @@ export default {
   },
 	computed: {
 		loginMessage: function () {
-			if(this.$store.getters.isExpire === false) {
+			if(this.isLogin === false) {
 				return '로그아웃'
 			} else {
 				return '로그인'

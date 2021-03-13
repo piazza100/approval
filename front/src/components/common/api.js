@@ -1,6 +1,62 @@
 import axios from 'axios'
 export const api = {
   	methods: {
+  		getApprovalList : function(){
+  			let url = '/api/approval/list'
+  			if(this.$store.getters.role === 'ROLE_ADMIN'){
+  				url = '/api/approval/admin/list'
+  			}
+		    axios.get(url)
+		        .then(({data}) => {
+		          this.approvalVoList = data.result
+		        })
+		        .catch((error) => {
+		          if(typeof error.response.data.code !== 'undefined'){
+		            alert(error.response.data.message);
+		          }else{
+		            alert(this.MSG.MESG_SERVER_ERROR);
+		          }
+		        })
+		        .finally(() => {
+		          this.onProgress = false
+		        });
+  		},
+  		getAdminList : function(approvalNo){
+		    axios.get('/api/user/admin/list')
+		        .then(({data}) => {
+		          this.adminUserList = data.result
+		        })
+		        .catch((error) => {
+		          if(typeof error.response.data.code !== 'undefined'){
+		            alert(error.response.data.message);
+		          }else{
+		            alert(this.MSG.MESG_SERVER_ERROR);
+		          }
+		        })
+		        .finally(() => {
+		          this.onProgress = false
+		        });
+  		},
+  		getApproval : function(approvalNo){
+		    axios.get('/api/approval/getApproval?approvalNo=' + approvalNo)
+		        .then(({data}) => {
+		          let approvalVo = data.result
+		          this.title = approvalVo.title
+		          this.content = approvalVo.content
+		          this.adminUserNo = approvalVo.approvalLineVOList[0].userNo
+		          this.endTime = approvalVo.endTime
+		        })
+		        .catch((error) => {
+		          if(typeof error.response.data.code !== 'undefined'){
+		            alert(error.response.data.message);
+		          }else{
+		            alert(this.MSG.MESG_SERVER_ERROR);
+		          }
+		        })
+		        .finally(() => {
+		          this.onProgress = false
+		        });
+  		},
 	    login : function(userId, password){
 	  	  if(this.userId === '') {
 			alert(this.MSG.MESG_INPUT_USER_ID_ERROR)
@@ -13,17 +69,26 @@ export const api = {
 
 	      this.$store.dispatch('LOGIN', {userId, password})
 	        .then(() => this.goToPages())
-	        .catch(({message}) => alert(this.MSG.MESG_CHECK_USER_ID_OR_PASSWORD_ERROR))
+			.catch((error) => {
+				if(typeof error.response.data.code !== 'undefined'){
+					alert(this.MSG.MESG_CHECK_USER_ID_OR_PASSWORD_ERROR);
+				}else{
+					alert(this.MSG.MESG_SERVER_ERROR);
+				}
+			})
 	    },
 	    goToPages () {
 	    	if(this.$route.query.redirect) {
 				window.location.href=this.$route.query.redirect    	
 	    	}else {
-				window.location.href='/main'    	
+	    		// if(){
+					window.location.href='/list'
+	    		// }else{
+					// window.location.href='/admin/list'
+	    		// }
 	    	}
 	    },
-		addApproval: function() {
-			let _this = this
+		addApproval: function(approvalNo) {
 			this.onProgress = true
 
 			if(this.title === ''){
@@ -39,25 +104,84 @@ export const api = {
 				return
 			}
 
-			let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{'state' : this.STATE_CODE.REQUEST, 'userNo' : this.adminUserNo}]}
-
-			axios.post('/api/approval/add', param)
+			// let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{'state' : this.STATE_CODE.REQUEST.CODE, 'userNo' : this.adminUserNo}]}// 필요 없어서 삭제.. 추후 확인
+			let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{'userNo' : this.adminUserNo}]}
+			let url = '/api/approval/add'
+			if(typeof approvalNo !== 'undefined'){
+				param.approvalNo = this.approvalNo
+				url = '/api/approval/update'
+			}
+			axios.post(url, param)
 		        .then(({data}) => {
-		        	alert(_this.MSG.MESG_ADD_APPROVAL_SUCCESS)
-		        	location.reload()
+		        	if (typeof approvalNo === 'undefined') {
+			        	alert(this.MSG.MESG_ADD_APPROVAL_SUCCESS)
+		        	} else {
+			        	alert(this.MSG.MESG_UPDATE_APPROVAL_SUCCESS)
+		        	}
+		        	window.location.href='/list'
 		        })
 				.catch((error) => {
 					if(typeof error.response.data.code !== 'undefined'){
 						alert(error.response.data.message);
 					}else{
-						alert(_this.MSG.MESG_SERVER_ERROR);
+						alert(this.MSG.MESG_SERVER_ERROR);
 					}
 				})
 				.finally(() => {
-					_this.onProgress = false
+					this.onProgress = false
 				});
 		},
-		
+		updateApprovalState: function(approvalNo, state) {
+			this.onProgress = true
+
+			let param = {'state' : state,'approvalNo' : this.approvalNo}
+			let url = '/api/approval/admin/update'
+
+			axios.post(url, param)
+				.then(({data}) => {
+					if(state === 'CONFIRM'){
+						alert(this.MSG.MESG_CONFIRM_APPROVAL_SUCCESS)
+					}else{
+						alert(this.MSG.MESG_REJECT_APPROVAL_SUCCESS)
+					}
+					location.reload()
+				})
+				.catch((error) => {
+					if(typeof error.response.data.code !== 'undefined'){
+						alert(error.response.data.message);
+					}else{
+						alert(this.MSG.MESG_SERVER_ERROR);
+					}
+				})
+				.finally(() => {
+					this.onProgress = false
+				});
+		},
+		deleteApproval: function(approvalNo) {
+			this.onProgress = true
+
+			let param = {'approvalNo' : this.approvalNo}
+			let url = '/api/approval/delete'
+
+			axios.post(url, param)
+				.then(({data}) => {
+					alert(this.MSG.MESG_DELETE_APPROVAL_SUCCESS)
+					window.location.href='/list'
+				})
+				.catch((error) => {
+					if(typeof error.response.data.code !== 'undefined'){
+						alert(error.response.data.message);
+					}else{
+						alert(this.MSG.MESG_SERVER_ERROR);
+					}
+				})
+				.finally(() => {
+					this.onProgress = false
+				});
+		},
+		isValidApproval: function() {
+
+		},
 	},
 	computed: {},
 }

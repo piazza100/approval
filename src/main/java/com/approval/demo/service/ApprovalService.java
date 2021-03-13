@@ -1,5 +1,6 @@
 package com.approval.demo.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +25,20 @@ public class ApprovalService {
 	ApprovalMapper approvalMapper;
 
 	public ApprovalVO getApproval(ApprovalVO approvalVO) throws Exception {
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApproval(approvalVO);
 	}
 
 	public List<ApprovalVO> getApprovalList(ApprovalVO approvalVO) throws Exception {
-		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		approvalVO.setUserNo(userVO.getUserNo());
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApprovalList(approvalVO);
 	}
 
 	public List<ApprovalVO> getApprovalRequestList(ApprovalVO approvalVO) throws Exception {
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApprovalRequestList(approvalVO);
 	}
 
@@ -45,14 +50,28 @@ public class ApprovalService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void addApproval(ApprovalVO approvalVO) throws Exception {
-		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		approvalVO.setUserNo(userVO.getUserNo());
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		approvalVO.setUserNo(this.getUserNo());
 
 		// 결재 등록
 		approvalMapper.addApproval(approvalVO);
 
 		// 결재선 등록
 		this.addApprovalLine(approvalVO);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
+	public void deleteApproval(ApprovalVO approvalVO) throws Exception {
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		approvalVO.setUserNo(this.getUserNo());
+
+		// 결재 수정 가능한지 확인
+		if (this.isValidApproval(approvalVO) == false)
+			throw new ApprovalException(ApprovalException.Code.DO_NOT_UPDATE_EXCEPTION);
+
+		// 결재 삭제
+		approvalVO.setEndTime(new Date());
+		approvalMapper.updateApproval(approvalVO);
 	}
 
 	/**
@@ -87,12 +106,12 @@ public class ApprovalService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void updateApproval(ApprovalVO approvalVO) throws Exception {
-		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		approvalVO.setUserNo(userVO.getUserNo());
+//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		approvalVO.setUserNo(this.getUserNo());
 
 		// 결재 수정 가능한지 확인
 		if (this.isValidApproval(approvalVO) == false)
-			throw new ApprovalException(ApprovalException.Code.NULL_DATA_EXCEPTION);
+			throw new ApprovalException(ApprovalException.Code.DO_NOT_UPDATE_EXCEPTION);
 
 		// 결재 수정 처리
 		approvalMapper.updateApproval(approvalVO);
@@ -110,16 +129,16 @@ public class ApprovalService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void updateApprovalLine(ApprovalLineVO approvalLineVO) throws Exception {
-		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		approvalLineVO.setUserNo(userVO.getUserNo());
+		Integer userNo = this.getUserNo();
+		approvalLineVO.setUserNo(userNo);
 
 		ApprovalVO approvalVO = new ApprovalVO();
 		approvalVO.setApprovalNo(approvalLineVO.getApprovalNo());
-		approvalVO.setUserNo(userVO.getUserNo());
+		approvalVO.setUserNo(userNo);
 
 		// 결재선 수정 가능한지 확인
 		if (this.isValidApproval(approvalVO) == false)
-			throw new ApprovalException(ApprovalException.Code.NULL_DATA_EXCEPTION);
+			throw new ApprovalException(ApprovalException.Code.DO_NOT_UPDATE_EXCEPTION);
 
 		// 결재 상태 업데이트
 		if (approvalMapper.updateApprovalLine(approvalLineVO) == 0)
@@ -163,4 +182,8 @@ public class ApprovalService {
 		}
 	}
 
+	private Integer getUserNo() {
+		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		return userVO.getUserNo(); 
+	}
 }

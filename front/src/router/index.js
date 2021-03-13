@@ -55,21 +55,27 @@ export default new Router({
       beforeEnter: requireAuth()
     },
     {
-      path: '/view',
-      name: 'View',
-      component: View,
+      path: '/write/:approvalNo',
+      name: 'Write',
+      component: Write,
       beforeEnter: requireAuth()
     },
+    // {
+    //   path: '/view',
+    //   name: 'View',
+    //   component: View,
+    //   beforeEnter: requireAuth()
+    // },
     {
-      path: '/view/:id',
+      path: '/view/:approvalNo',
       name: 'View',
       component: View,
       beforeEnter: requireAuth()
     },
-	{
-	  path: '*',
-	  component: Main,
-      beforeEnter: requireAuth()
-	}
+  	{
+  	  path: '*',
+  	  component: Main,
+        beforeEnter: requireAuth()
+  	}
   ]
 })

@@ -3,7 +3,7 @@
 
   <Header/>
   <div>
-      <h3>결재 문서 등록</h3>
+      <h3>결재 문서 {{writeMessage}}</h3>
 
       <div>제목<input id="title" type="text" value="" maxlength="30" v-model.trim="title"></div>
       <div>내용<textarea id="content" value="" v-model.trim="content"/></div>
@@ -16,7 +16,21 @@
       </select>
       <span>선택함: {{ adminUserNo }}</span>
 
-      <div><button type="button" onclick="" @click="addApproval">등록</button></div>
+      <!-- USER -->
+      <div v-if="$store.getters.role === 'ROLE_USER'">
+        <span v-if="approvalNo === undefined || endTime === null">
+          <button type="button" onclick="" @click="addApproval(approvalNo)">{{writeMessage}}</button>
+          <span v-if="approvalNo !== undefined">
+          <button type="button" onclick="" @click="deleteApproval(approvalNo)">삭제</button>
+          </span>
+        </span>
+      </div>
+
+      <!-- ADMIN -->
+     <!--  <div v-if="$store.getters.role === 'ROLE_ADMIN'">
+        <button type="button" onclick="" @click="updateApprovalState(approvalNo, STATE_CODE.REJECT.CODE)">반려</button>
+        <button type="button" onclick="" @click="updateApprovalState(approvalNo, STATE_CODE.CONFIRM.CODE)">승인</button>
+      </div> -->
 
   </div>
   <Footer/>
@@ -29,7 +43,6 @@
 <script>
 import Header from './Header.vue'
 import Footer from './Footer.vue'
-import axios from 'axios'
 
 import {common} from './common/common.js'
 
@@ -40,30 +53,27 @@ export default {
   },
   data() {
     return {
-      adminUserList : ''
+      approvalNo: this.$route.params.approvalNo,
+      adminUserList : '',
+      endTime : ''
     };
   },
   created() {
-    let _this = this
+    if(typeof this.approvalNo !== 'undefined') 
+      this.getApproval(this.approvalNo)
 
-    axios.get('/api/user/admin/list')
-        .then(({data}) => {
-          _this.adminUserList = data.result
-        })
-        .catch((error) => {
-          if(typeof error.response.data.code !== 'undefined'){
-            alert(error.response.data.message);
-          }else{
-            alert(_this.MSG.MESG_SERVER_ERROR);
-          }
-        })
-        .finally(() => {
-          _this.onProgress = false
-        });
+    this.getAdminList()
   },
-  mounted: function() {},
-  methods: {
-
+  mounted: function() {
+  },
+  computed: {
+    writeMessage: function () {
+      if(typeof this.approvalNo !== 'undefined') {
+        return '수정'
+      } else {
+        return '등록'
+      } 
+    },
   }
 };
 </script>

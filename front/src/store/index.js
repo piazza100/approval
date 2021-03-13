@@ -5,8 +5,6 @@ import jwt_decode from 'jwt-decode'
 
 Vue.use(Vuex)
 
-// const resourceHost = '/api'
-
 const enhanceAccessToeken = () => {
   const {token} = localStorage
   if (!token) return
@@ -48,16 +46,6 @@ export default new Vuex.Store({
       }
       return role;
     },
-    // encUserKey(state) {
-    //   let encUserKey = '';
-    //   const token = state.token;
-    //   if (token) {
-    //     const decoded = jwt_decode(token);
-    //     encUserKey = decoded.encUserKey;
-    //   }
-    //   return encUserKey;
-    // },
-
   },
   mutations: {
     LOGIN (state, {token}) {
@@ -65,8 +53,6 @@ export default new Vuex.Store({
       state.token = token
       // 토큰을 로컬 스토리지에 저장
       localStorage.token = token
-      
-
     },
     LOGOUT (state) {
       state.token = null

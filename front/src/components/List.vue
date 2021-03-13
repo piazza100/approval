@@ -7,14 +7,34 @@
 
       <table border="1">
         <tr>
+          <td width="200px;">결재 번호</td>
           <td width="200px;">제목</td>
           <td width="500px;">내용</td>
           <td width="200px;">상태</td>
+          <td width="200px;">종료일시</td>
         </tr>
-        <tr v-for="approval in approvalList">
+        <tr v-for="approval in approvalVoList">
+          <td>{{ approval.approvalNo }}</td>
           <td>{{ approval.title }}</td>
-          <td>{{ approval.content }}</td>
-          <td>{{ approval.approvalLineVOList[0].state }}</td>
+
+          <td v-if="$store.getters.role === 'ROLE_USER'"><a :href="`/write/${approval.approvalNo}`">{{ approval.content }}</a></td>
+          <td v-else><a :href="`/view/${approval.approvalNo}`">{{ approval.content }}</a></td>
+
+          <td>
+            <span v-for="approvalLine in approval.approvalLineVOList">
+              <!-- {{ approvalLine.state }} -->
+              <span v-if="approval.endTime !== null && approvalLine.state === STATE_CODE.REQUEST.CODE">
+              {{ STATE_CODE.DELETE.MESSAGE }}
+              </span>
+              <!-- <span v-else-if="approvalLine.state === STATE_CODE.REJECT.CODE">
+              </span> -->
+              <span v-else>
+              {{ approvalLine.state | getStateCodeMessage(approvalLine.state) }}
+              </span>
+
+            </span>
+          </td>
+          <td>{{ approval.endTime | formatDate('YYYY/MM/DD HH:mm') }}</td>
         </tr>
       </table>
 
@@ -43,28 +63,39 @@ export default {
     };
   },
   created() {
-    let _this = this
-
-    axios.get('/api/approval/list')
-        .then(({data}) => {
-          _this.approvalList = data.result
-        })
-        .catch((error) => {
-          if(typeof error.response.data.code !== 'undefined'){
-            alert(error.response.data.message);
-          }else{
-            alert(_this.MSG.MESG_SERVER_ERROR);
-          }
-        })
-        .finally(() => {
-          _this.onProgress = false
-        });
-
+    this.getApprovalList()
   },
   mounted: function() {},
   methods: {
 
-  }
+  },
+  filters: {
+    getStateCodeMessage: function (value) {
+      let messge
+
+      if ('REQUEST' === value){
+        messge = '요청'
+      } else if ('CONFIRM' === value) {
+        messge = '승인'
+      } else if ('REJECT' === value) {
+        messge = '반려'
+      } else if ('DELETE' === value) {
+        messge = '삭제'
+      }
+
+      // if (this.STATE_CODE.REQUEST.CODE === value){
+      //   messge = this.STATE_CODE.REQUEST.MESSAGE
+      // } else if (this.STATE_CODE.CONFIRM.CODE === value) {
+      //   messge = this.STATE_CODE.CONFIRM.MESSAGE
+      // } else if (this.STATE_CODE.REJECT.CODE === value) {
+      //   messge = this.STATE_CODE.REJECT.MESSAGE
+      // } else if (this.STATE_CODE.DELETE.CODE === value) {
+      //   messge = this.STATE_CODE.DELETE.MESSAGE
+      // }
+
+      return messge
+    },
+  },
 };
 </script>
 
