@@ -10,28 +10,22 @@
           <td width="200px;">결재 번호</td>
           <td width="200px;">제목</td>
           <td width="500px;">내용</td>
-          <td width="200px;">상태</td>
+          <td width="200px;">결재 상태</td>
           <td width="200px;">종료일시</td>
         </tr>
         <tr v-for="approval in approvalVoList">
           <td>{{ approval.approvalNo }}</td>
           <td>{{ approval.title }}</td>
-
           <td v-if="$store.getters.role === 'ROLE_USER'"><a :href="`/write/${approval.approvalNo}`">{{ approval.content }}</a></td>
           <td v-else><a :href="`/view/${approval.approvalNo}`">{{ approval.content }}</a></td>
-
           <td>
             <span v-for="approvalLine in approval.approvalLineVOList">
-              <!-- {{ approvalLine.state }} -->
               <span v-if="approval.endTime !== null && approvalLine.state === STATE_CODE.REQUEST.CODE">
               {{ STATE_CODE.DELETE.MESSAGE }}
               </span>
-              <!-- <span v-else-if="approvalLine.state === STATE_CODE.REJECT.CODE">
-              </span> -->
               <span v-else>
               {{ approvalLine.state | getStateCodeMessage(approvalLine.state) }}
               </span>
-
             </span>
           </td>
           <td>{{ approval.endTime | formatDate('YYYY/MM/DD HH:mm') }}</td>
@@ -40,8 +34,6 @@
 
   </div>
   <Footer/>
-
-
 
 </div>
 </template>
@@ -72,7 +64,6 @@ export default {
   filters: {
     getStateCodeMessage: function (value) {
       let messge
-
       if ('REQUEST' === value){
         messge = '요청'
       } else if ('CONFIRM' === value) {
@@ -82,17 +73,6 @@ export default {
       } else if ('DELETE' === value) {
         messge = '삭제'
       }
-
-      // if (this.STATE_CODE.REQUEST.CODE === value){
-      //   messge = this.STATE_CODE.REQUEST.MESSAGE
-      // } else if (this.STATE_CODE.CONFIRM.CODE === value) {
-      //   messge = this.STATE_CODE.CONFIRM.MESSAGE
-      // } else if (this.STATE_CODE.REJECT.CODE === value) {
-      //   messge = this.STATE_CODE.REJECT.MESSAGE
-      // } else if (this.STATE_CODE.DELETE.CODE === value) {
-      //   messge = this.STATE_CODE.DELETE.MESSAGE
-      // }
-
       return messge
     },
   },

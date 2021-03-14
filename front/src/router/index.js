@@ -2,15 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store'
 import Login from '@/components/Login'
-import Main from '@/components/Main'
 import List from '@/components/List'
 import View from '@/components/View'
 import Write from '@/components/Write'
 
-
-
 Vue.use(Router)
-
 store.getters.isAuthenticated
 
 const requireAuth = () => (to, from, next) => {
@@ -36,12 +32,6 @@ export default new Router({
       name: 'Login',
       component: Login
     },
-    // {
-    //   path: '/main',
-    //   name: 'Main',
-    //   component: Main,
-    //   beforeEnter: requireAuth()
-    // },
     {
       path: '/list',
       name: 'List',
@@ -60,12 +50,6 @@ export default new Router({
       component: Write,
       beforeEnter: requireAuth()
     },
-    // {
-    //   path: '/view',
-    //   name: 'View',
-    //   component: View,
-    //   beforeEnter: requireAuth()
-    // },
     {
       path: '/view/:approvalNo',
       name: 'View',
@@ -74,7 +58,7 @@ export default new Router({
     },
   	{
   	  path: '*',
-  	  component: Main,
+  	  component: List,
         beforeEnter: requireAuth()
   	}
   ]

@@ -1,15 +1,10 @@
 <template>
 	<header>
-
-		<!-- <a href="/main">결재 메인</a> -->
 		<a href="/list"> | 결재 목록</a>
-		<!-- <a href="/view"> | 결재 내용</a> -->
 		<a href="/write" v-if="$store.getters.role === 'ROLE_USER'"> | 결재 문서 등록</a>
 		<a href="/login" v-show="isLogin !== false"><span>{{loginMessage}}</span></a></span>
 		<a href="" @click.prevent="logout" v-show="isLogin === false"><span> | {{loginMessage}}</span></a>
-
 		({{roleMessage}})
-
 	</header>
 </template>
 

@@ -26,4 +26,13 @@ export const common = {
 			}
 		},
 	},
+  computed: {
+    writeMessage: function () {
+      if(typeof this.approvalNo !== 'undefined') {
+        return '수정'
+      } else {
+        return '등록'
+      } 
+    },
+  }
 }

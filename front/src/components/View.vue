@@ -3,7 +3,7 @@
 
   <Header/>
   <div>
-      <h3>결재 내용</h3>
+      <h3>결재 문서 내용 - {{approvalNo}}</h3>
 
       <div>제목<input id="title" type="text" value="" maxlength="30" v-model.trim="title"></div>
       <div>내용<textarea id="content" value="" v-model.trim="content"/></div>
@@ -21,7 +21,6 @@
         <button type="button" onclick="" @click="updateApprovalState(approvalNo, STATE_CODE.REJECT.CODE)">반려</button>
         <button type="button" onclick="" @click="updateApprovalState(approvalNo, STATE_CODE.CONFIRM.CODE)">승인</button>
       </div>
-
   </div>
   <Footer/>
 
@@ -57,13 +56,6 @@ export default {
   mounted: function() {
   },
   computed: {
-    writeMessage: function () {
-      if(typeof this.approvalNo !== 'undefined') {
-        return '수정'
-      } else {
-        return '등록'
-      } 
-    },
   }
 };
 </script>

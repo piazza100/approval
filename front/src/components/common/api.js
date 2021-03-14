@@ -8,7 +8,7 @@ export const api = {
   			}
 		    axios.get(url)
 		        .then(({data}) => {
-		          this.approvalVoList = data.result
+		          this.approvalVoList = data
 		        })
 		        .catch((error) => {
 		          if(typeof error.response.data.code !== 'undefined'){
@@ -24,7 +24,7 @@ export const api = {
   		getAdminList : function(approvalNo){
 		    axios.get('/api/user/admin/list')
 		        .then(({data}) => {
-		          this.adminUserList = data.result
+		          this.adminUserList = data
 		        })
 		        .catch((error) => {
 		          if(typeof error.response.data.code !== 'undefined'){
@@ -40,7 +40,7 @@ export const api = {
   		getApproval : function(approvalNo){
 		    axios.get('/api/approval/getApproval?approvalNo=' + approvalNo)
 		        .then(({data}) => {
-		          let approvalVo = data.result
+		          let approvalVo = data
 		          this.title = approvalVo.title
 		          this.content = approvalVo.content
 		          this.adminUserNo = approvalVo.approvalLineVOList[0].userNo
@@ -81,11 +81,7 @@ export const api = {
 	    	if(this.$route.query.redirect) {
 				window.location.href=this.$route.query.redirect    	
 	    	}else {
-	    		// if(){
-					window.location.href='/list'
-	    		// }else{
-					// window.location.href='/admin/list'
-	    		// }
+				window.location.href='/list'
 	    	}
 	    },
 		addApproval: function(approvalNo) {
@@ -104,8 +100,7 @@ export const api = {
 				return
 			}
 
-			// let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{'state' : this.STATE_CODE.REQUEST.CODE, 'userNo' : this.adminUserNo}]}// 필요 없어서 삭제.. 추후 확인
-			let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{'userNo' : this.adminUserNo}]}
+			let param = {'content' : this.content, 'title' : this.title, 'approvalLineVOList' : [{"state" : this.STATE_CODE.REQUEST.CODE,'userNo' : this.adminUserNo}]}
 			let url = '/api/approval/add'
 			if(typeof approvalNo !== 'undefined'){
 				param.approvalNo = this.approvalNo
@@ -144,11 +139,14 @@ export const api = {
 					}else{
 						alert(this.MSG.MESG_REJECT_APPROVAL_SUCCESS)
 					}
-					location.reload()
+		        	window.location.href='/list'
 				})
 				.catch((error) => {
 					if(typeof error.response.data.code !== 'undefined'){
 						alert(error.response.data.message);
+						if(error.response.data.code === 'E1006'){
+				        	window.location.href='/list'
+						}
 					}else{
 						alert(this.MSG.MESG_SERVER_ERROR);
 					}
@@ -171,6 +169,9 @@ export const api = {
 				.catch((error) => {
 					if(typeof error.response.data.code !== 'undefined'){
 						alert(error.response.data.message);
+						if(error.response.data.code === 'E1006'){
+				        	window.location.href='/list'
+						}
 					}else{
 						alert(this.MSG.MESG_SERVER_ERROR);
 					}
