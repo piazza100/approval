@@ -153,32 +153,6 @@
 	]]>
 	</select>
 	
-	<!-- 결재 수정 가능한지 확인 -->
-	<!-- <select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
-	<![CDATA[
-		SELECT COUNT(*)
-		  FROM APPROVAL.APPROVAL A
-			   ,APPROVAL.APPROVAL_LINE B
-		 where A.approval_no = #{approvalNo}
-		   and a.approval_no  = b.approval_no 
-		   and a.end_time is not null
-		   or (b.state in ('CONFIRM', 'REJECT') and B.user_no = #{userNo})
-	]]>
-	</select> -->
-	
-	<!-- 결재선 수정 가능한지 확인 -->
-	<!-- <select id="getValidApprovalLineCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
-	<![CDATA[
-		SELECT COUNT(*)
-		  FROM APPROVAL.APPROVAL A
-			   ,APPROVAL.APPROVAL_LINE B
-		 where A.approval_no = #{approvalNo}
-		   and a.approval_no  = b.approval_no 
-		   and (a.end_time is not null or b.state in ('CONFIRM', 'REJECT'))
-		   and B.user_no = #{userNo}
-	]]>
-	</select> -->
-	
 	<!-- 결재 수정 가능한지 확인 //TODO 수정중 -->
 	<select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
 	<![CDATA[

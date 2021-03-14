@@ -3,7 +3,6 @@ package com.approval.demo.controller;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.UnsupportedEncodingException;
@@ -35,8 +34,6 @@ public class ApprovalControllerTest {
 	
 	private String ADMIN_TOKEN;
 	private String ADMIN_TOKEN_2;
-	
-//	private Integer approvalNo;
 	
 	@BeforeEach
 	void init() throws Exception {
@@ -173,31 +170,26 @@ public class ApprovalControllerTest {
 		// 결재 상태 변경 실패 - 파라미터 approvalNo (결재 번호) 누락
 		mvc.perform(post("/api/approval/admin/update").header("Authorization", "Bearer " + this.ADMIN_TOKEN).contentType(MediaType.APPLICATION_JSON)
 		.content("{\"state\":\"REJECT\",\"approvalNo\":\"\"}"))
-		.andDo(print())
 		.andExpect(status().is4xxClientError());
 
 		// 결재 상태 변경 실패 - 파라미터 state 누락
 		mvc.perform(post("/api/approval/admin/update").header("Authorization", "Bearer " + this.ADMIN_TOKEN).contentType(MediaType.APPLICATION_JSON)
 		.content("{\"state\":\"\",\"approvalNo\":\"69\"}"))
-		.andDo(print())
 		.andExpect(status().is4xxClientError());
 
 		// 결재 상태 변경 실패 - 수정할 수 없는 상태
 		mvc.perform(post("/api/approval/admin/update").header("Authorization", "Bearer " + this.ADMIN_TOKEN).contentType(MediaType.APPLICATION_JSON)
 		.content("{\"state\":\"REJECT\",\"approvalNo\":\"0\"}"))
-		.andDo(print())
 		.andExpect(status().is4xxClientError());
 
 		// 결재 상태 변경 실패 - 관리자 수정 권한 없음
 		mvc.perform(post("/api/approval/admin/update").header("Authorization", "Bearer " + this.ADMIN_TOKEN_2).contentType(MediaType.APPLICATION_JSON)
 		.content("{\"state\":\"REJECT\",\"approvalNo\":\"" + approvalNo + "\"}"))
-		.andDo(print())
 		.andExpect(status().is4xxClientError());
 		
 		// 결재 상태 변경 성공
 		mvc.perform(post("/api/approval/admin/update").header("Authorization", "Bearer " + this.ADMIN_TOKEN).contentType(MediaType.APPLICATION_JSON)
 				.content("{\"state\":\"REJECT\",\"approvalNo\":\"" + approvalNo + "\"}"))
-		.andDo(print())
 		.andExpect(status().isOk());
 	}
 }
