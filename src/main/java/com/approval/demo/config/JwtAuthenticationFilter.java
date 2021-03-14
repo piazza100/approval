@@ -25,47 +25,49 @@ import io.jsonwebtoken.SignatureException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
-        String header = req.getHeader(HEADER_STRING);
-        String username = null;
-        String authToken = null;
-        if (header != null && header.startsWith(TOKEN_PREFIX)) {
-            authToken = header.replace(TOKEN_PREFIX,"");
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(authToken);
-                if(username != null && !"".equals(username)) {
-                	username = CryptoUtil.AESdecrypt(username);
-                }
-            } catch (IllegalArgumentException e) {
-                logger.error("an error occured during getting username from token", e);
-            } catch (ExpiredJwtException e) {
-                logger.warn("the token is expired and not valid anymore", e);
-            } catch(SignatureException e){
-                logger.error("Authentication Failed. Username or Password not valid.");
-            } catch (Exception e) {
-            	logger.error("Authentication Failed. CryptoUtil.AESdecrypt");
+	@Override
+	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+			throws IOException, ServletException {
+		String header = req.getHeader(HEADER_STRING);
+		String username = null;
+		String authToken = null;
+		if (header != null && header.startsWith(TOKEN_PREFIX)) {
+			authToken = header.replace(TOKEN_PREFIX, "");
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(authToken);
+				if (username != null && !"".equals(username)) {
+					username = CryptoUtil.AESdecrypt(username);
+				}
+			} catch (IllegalArgumentException e) {
+				logger.error("an error occured during getting username from token", e);
+			} catch (ExpiredJwtException e) {
+				logger.warn("the token is expired and not valid anymore", e);
+			} catch (SignatureException e) {
+				logger.error("Authentication Failed. Username or Password not valid.");
+			} catch (Exception e) {
+				logger.error("Authentication Failed. CryptoUtil.AESdecrypt");
 			}
-        } else {
-            logger.debug("couldn't find bearer string, will ignore the header");
-        }
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		} else {
+			logger.debug("couldn't find bearer string, will ignore the header");
+		}
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());//"ROLE_QATEAM, ROLE_DEVELOPER, ROLE_USER"
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                logger.debug("authenticated user " + username + ", setting security context");
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        }
+			if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());// "ROLE_QATEAM, ROLE_DEVELOPER, ROLE_USER"
+				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+				logger.debug("authenticated user " + username + ", setting security context");
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}
 
 		chain.doFilter(req, res);
 	}

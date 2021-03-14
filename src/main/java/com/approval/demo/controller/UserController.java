@@ -1,8 +1,6 @@
 package com.approval.demo.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +33,13 @@ public class UserController {
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
 
+	/**
+	 * 로그인
+	 * 
+	 * @param userVO
+	 * @return
+	 * @throws AuthenticationException
+	 */
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody UserVO userVO) throws AuthenticationException {
 		final Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userVO.getUserId(), userVO.getPassword()));
@@ -57,14 +62,17 @@ public class UserController {
 		}
 		return ResponseEntity.ok(new AuthTokenVO(token));
 	}
-	
 
+	/**
+	 * 결재자 목록
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping(value = "/admin/list")
 	public ResponseEntity<?> adminList() throws Exception {
-		Map resultMap = new HashMap();
 		List<UserVO> list = this.userService.getAdminList();
-		resultMap.put("result", list);
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok(list);
 	}
 
 }

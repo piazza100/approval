@@ -3,6 +3,7 @@ package com.approval.demo.domain;
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
 @Data
 public class ApprovalLineVO {
 	private Integer approvalNo;
+	@NotNull
 	private Integer userNo;
 	private Integer seq;
 

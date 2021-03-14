@@ -3,6 +3,7 @@ package com.approval.demo.domain;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
@@ -23,5 +24,6 @@ public class ApprovalVO {
 	private Date modTime;
 	private Date endTime;
 
+	@Valid
 	private List<ApprovalLineVO> approvalLineVOList;
 }

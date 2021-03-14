@@ -9,8 +9,6 @@ public interface UserMapper {
 
 	public UserVO getUser(UserVO userVO) throws SQLException;
 
-	public UserVO getUserByNo(Integer userNo) throws SQLException;
-
 	public List<UserVO> getAdminList() throws SQLException;
 	
 }

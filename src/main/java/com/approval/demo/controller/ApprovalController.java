@@ -1,11 +1,10 @@
 package com.approval.demo.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,63 +25,104 @@ public class ApprovalController {
 	@Autowired
 	ApprovalService approvalService;
 
+	/**
+	 * 사용자 > 결재 목록
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping(value = "/list")
 	public ResponseEntity<?> list(ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
 		List<ApprovalVO> list = this.approvalService.getApprovalList(approvalVO);
-		resultMap.put("result", list);
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok(list);
 	}
 
+	/**
+	 * 관리자 > 결재 요청 목록
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping(value = "/admin/list")
 	public ResponseEntity<?> adminList(ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
 		List<ApprovalVO> list = this.approvalService.getApprovalRequestList(approvalVO);
-		resultMap.put("result", list);
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok(list);
 	}
 
+	/**
+	 * 결재 상세 조회
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping(value = "/getApproval")
 	public ResponseEntity<?> getApproval(ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
 		ApprovalVO view = this.approvalService.getApproval(approvalVO);
-		resultMap.put("result", view);
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok(view);
 	}
 
+	/**
+	 * 결재 등록
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping(value = "/add")
 	public ResponseEntity<?> add(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
 		this.approvalService.addApproval(approvalVO);
-		resultMap.put("result", "Y");
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok("Y");
 	}
 
+	/**
+	 * 결재 수정
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping(value = "/update")
 	public ResponseEntity<?> update(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
+		if (approvalVO.getApprovalNo() == null) {
+			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
+		}
 		this.approvalService.updateApproval(approvalVO);
-		resultMap.put("result", "Y");
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok("Y");
 	}
 
+	/**
+	 * 관리자 > 결재 상태(승인/반려) 변경
+	 * 
+	 * @param approvalLineVO
+	 * @return
+	 * @throws Exception
+	 */
+	@PostMapping(value = "/admin/update")
+	public ResponseEntity<?> adminUpdate(@RequestBody ApprovalLineVO approvalLineVO) throws Exception {
+		if (StringUtils.isBlank(approvalLineVO.getState()) || approvalLineVO.getApprovalNo() == null) {
+			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
+		}
+		this.approvalService.updateApprovalLine(approvalLineVO);
+		return ResponseEntity.ok("Y");
+	}
+
+	/**
+	 * 결재 삭제
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping(value = "/delete")
 	public ResponseEntity<?> delete(@RequestBody ApprovalVO approvalVO) throws Exception {
-		Map resultMap = new HashMap();
 		if (approvalVO.getApprovalNo() == null) {
 			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
 		}
 		this.approvalService.deleteApproval(approvalVO);
-		resultMap.put("result", "Y");
-		return ResponseEntity.ok(resultMap);
-	}
-
-	@PostMapping(value = "/admin/update")
-	public ResponseEntity<?> adminUpdate(@RequestBody @Valid ApprovalLineVO approvalLineVO) throws Exception {
-		Map resultMap = new HashMap();
-		this.approvalService.updateApprovalLine(approvalLineVO);
-		resultMap.put("result", "Y");
-		return ResponseEntity.ok(resultMap);
+		return ResponseEntity.ok("Y");
 	}
 
 }

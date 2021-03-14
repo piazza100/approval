@@ -3,37 +3,6 @@
 
 <mapper namespace="com.approval.demo.mapper.ApprovalMapper">
 
-	<!-- 결재진행 목록 상세 -->
-	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
-		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
-				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
-		  FROM APPROVAL.APPROVAL A
-		      ,APPROVAL.APPROVAL_LINE B
-		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
-	       and A.approval_no = #{approvalNo}
-	     ORDER BY a.approval_no desc, B.SEQ
-	</select>
-
-	<!-- <select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultType="com.approval.demo.domain.ApprovalVO">
-		SELECT approval_no approvalNo, user_no userNo, title, content, reg_time regTime, mod_time modTime, end_time
-		  FROM approval.approval
-		 where user_no = #{userNo}
-		   <if test="approvalNo != null">	
-		   and approval_no = #{approvalNo}
-		   </if>
-	</select> -->
-
-	<!-- 결재진행 목록 -->
-	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
-		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
-				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
-		  FROM APPROVAL.APPROVAL A
-		      ,APPROVAL.APPROVAL_LINE B
-		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
-	       AND A.USER_NO = #{userNo}
-	     ORDER BY a.approval_no desc, B.SEQ
-	</select>
-
 	<resultMap id="approvalJoinList" type="com.approval.demo.domain.ApprovalVO">
 	    <id property="approvalNo" column="approvalNo" />
 	    <result property="userNo" column="userNo" />
@@ -53,7 +22,29 @@
 	    </collection>
 	</resultMap>
 
-	<!-- 결재요청 목록 -->
+	<!-- 결재 상세 조회 -->
+	<select id="getApproval" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
+				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
+		  FROM APPROVAL.APPROVAL A
+		      ,APPROVAL.APPROVAL_LINE B
+		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
+	       and A.approval_no = #{approvalNo}
+	     ORDER BY a.approval_no desc, B.SEQ
+	</select>
+
+	<!-- 결재 목록 조회 -->
+	<select id="getApprovalList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
+		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time endTime
+				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
+		  FROM APPROVAL.APPROVAL A
+		      ,APPROVAL.APPROVAL_LINE B
+		 WHERE A.APPROVAL_NO = B.APPROVAL_NO
+	       AND A.USER_NO = #{userNo}
+	     ORDER BY a.approval_no desc, B.SEQ
+	</select>
+
+	<!-- 결재 요청 목록 조회 -->
 	<select id="getApprovalRequestList" parameterType="com.approval.demo.domain.ApprovalVO" resultMap="approvalJoinList">
 		SELECT a.approval_no approvalNo, a.user_no userNo, a.title, a.content, a.reg_time regTime, a.mod_time modTime, a.end_time
 				, b.approval_no approvalNo, b.user_no adminUserNo, b.state, b.seq, b.reg_time lineRegTime, b.mod_time lineModTime
@@ -63,8 +54,10 @@
 		       AND A.APPROVAL_NO = B.APPROVAL_NO
 		       AND B.STATE = 'REQUEST'
 		       AND B.USER_NO = #{userNo}
+		 ORDER BY a.approval_no desc, B.SEQ
 	</select>
 
+	<!-- 결재 등록 -->
 	<insert id="addApproval" parameterType="com.approval.demo.domain.ApprovalVO" useGeneratedKeys="true" keyProperty="approvalNo" keyColumn="approval_no">
 		INSERT INTO approval.approval
 		(	
@@ -80,6 +73,7 @@
 		 )
 	</insert>
 
+	<!-- 결재선 등록 -->
 	<insert id="addApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO" >
 		INSERT INTO approval.approval_line
 		(	
@@ -96,6 +90,7 @@
 		 )
 	</insert>
 
+	<!-- 결재 수정 -->
 	<update id="updateApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
 		<trim prefix="SET" suffixOverrides=",">
@@ -111,21 +106,10 @@
 			mod_time = now(),
 		</trim>
 		where approval_no = #{approvalNo}
+		  and user_no = #{userNo}
 	</update>
 
-	<!-- <update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
-		UPDATE approval.approval_line
-		   set state = #{state},
-			   mod_time = now()
-		where approval_no = #{approvalNo}
-		  <if test="userNo != null">	
-		  and user_no = #{userNo}
-		  </if>
-		  <if test="seq != null">	
-		  and seq = #{seq}
-		  </if>
-	</update> -->
-
+	<!-- 결재선 상태 수정 -->
 	<update id="updateApprovalLine" parameterType="com.approval.demo.domain.ApprovalLineVO">
 		UPDATE approval.approval_line
 		   set state = #{state},
@@ -135,6 +119,7 @@
 		  and state = 'REQUEST'
 	</update>
 
+	<!-- 다음 결재선 요청 상태로 변경 -->
 	<update id="updateApprovalLineReadyToRequest" parameterType="com.approval.demo.domain.ApprovalLineVO">
 		UPDATE approval.approval_line
 		   set state = #{state},
@@ -144,11 +129,13 @@
 		  and state = 'READY'
 	</update>
 
+	<!-- 결재 삭제 -->
  	<delete id="deleteApprovalLine" parameterType="com.approval.demo.domain.ApprovalVO">
 		DELETE FROM approval.approval_line 
 		 WHERE approval_no = #{approvalNo}
 	</delete>
 	
+	<!-- 결재 종료 -->
 	<update id="closeApproval" parameterType="com.approval.demo.domain.ApprovalVO">
 		UPDATE approval.approval
 		   SET end_time = now(),
@@ -156,6 +143,7 @@
 		 where approval_no = #{approvalNo}
 	</update>
 	
+	<!-- 다음 결재 번호 조회 -->
 	<select id="getNextSeq" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
 	<![CDATA[
 		SELECT min(seq) seq
@@ -165,7 +153,21 @@
 	]]>
 	</select>
 	
-	<select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<!-- 결재 수정 가능한지 확인 -->
+	<!-- <select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM APPROVAL.APPROVAL A
+			   ,APPROVAL.APPROVAL_LINE B
+		 where A.approval_no = #{approvalNo}
+		   and a.approval_no  = b.approval_no 
+		   and a.end_time is not null
+		   or (b.state in ('CONFIRM', 'REJECT') and B.user_no = #{userNo})
+	]]>
+	</select> -->
+	
+	<!-- 결재선 수정 가능한지 확인 -->
+	<!-- <select id="getValidApprovalLineCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
 	<![CDATA[
 		SELECT COUNT(*)
 		  FROM APPROVAL.APPROVAL A
@@ -173,9 +175,35 @@
 		 where A.approval_no = #{approvalNo}
 		   and a.approval_no  = b.approval_no 
 		   and (a.end_time is not null or b.state in ('CONFIRM', 'REJECT'))
-	]]>
-		   <if test="userNo != null">	
 		   and B.user_no = #{userNo}
-		   </if>
+	]]>
+	</select> -->
+	
+	<!-- 결재 수정 가능한지 확인 //TODO 수정중 -->
+	<select id="getValidApprovalCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM APPROVAL.APPROVAL A
+			   ,APPROVAL.APPROVAL_LINE B
+		 where A.approval_no = #{approvalNo}
+		   and a.approval_no  = b.approval_no 
+		   and a.end_time is null
+		   and b.state not in ('CONFIRM', 'REJECT')
+		   and a.user_no = #{userNo}
+	]]>
+	</select>
+	
+	<!-- 결재선 수정 가능한지 확인 //TODO 수정중  -->
+	<select id="getValidApprovalLineCount" parameterType="com.approval.demo.domain.ApprovalVO" resultType="Integer">
+	<![CDATA[
+		SELECT COUNT(*)
+		  FROM APPROVAL.APPROVAL A
+			   ,APPROVAL.APPROVAL_LINE B
+		 where A.approval_no = #{approvalNo}
+		   and a.approval_no  = b.approval_no 
+		   and a.end_time is null
+		   and b.state not in ('CONFIRM', 'REJECT')
+		   and B.user_no = #{userNo}
+	]]>
 	</select>
 </mapper>

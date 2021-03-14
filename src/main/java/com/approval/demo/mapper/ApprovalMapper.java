@@ -30,6 +30,8 @@ public interface ApprovalMapper {
 	
 	public Integer getValidApprovalCount(ApprovalVO approvalVO) throws SQLException;
 	
+	public Integer getValidApprovalLineCount(ApprovalVO approvalVO) throws SQLException;
+	
 	public Integer getNextSeq(ApprovalVO approvalVO) throws SQLException;
 	
 }

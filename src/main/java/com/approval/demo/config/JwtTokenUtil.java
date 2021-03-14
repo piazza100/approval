@@ -51,12 +51,11 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	private String doGenerateToken(UserVO user) throws Exception {
-		Claims claims = Jwts.claims().setSubject(CryptoUtil.AESencrypt("" + user.getUserId()));
-		
+		Claims claims = Jwts.claims().setSubject(CryptoUtil.AESencrypt(user.getUserId()));
+
 		if ("USER".equals(user.getRole())) {
 			claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
-		}else {
-//			claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN")));
+		} else {
 			claims.put("scopes", Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 		}
 
@@ -71,7 +70,7 @@ public class JwtTokenUtil implements Serializable {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		String username = getUsernameFromToken(token);
-       	try {
+		try {
 			username = CryptoUtil.AESdecrypt(username);
 		} catch (Exception e) {
 			e.printStackTrace();

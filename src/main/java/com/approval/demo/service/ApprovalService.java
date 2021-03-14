@@ -24,20 +24,37 @@ public class ApprovalService {
 	@Autowired
 	ApprovalMapper approvalMapper;
 
+	/**
+	 * 결재 상세 조회
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	public ApprovalVO getApproval(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApproval(approvalVO);
 	}
 
+	/**
+	 * 사용자 > 결재 목록
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	public List<ApprovalVO> getApprovalList(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApprovalList(approvalVO);
 	}
 
+	/**
+	 * 관리자 > 결재 요청 목록
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
 	public List<ApprovalVO> getApprovalRequestList(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		approvalVO.setUserNo(this.getUserNo());
 		return approvalMapper.getApprovalRequestList(approvalVO);
 	}
@@ -50,7 +67,6 @@ public class ApprovalService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void addApproval(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		approvalVO.setUserNo(this.getUserNo());
 
 		// 결재 등록
@@ -60,9 +76,14 @@ public class ApprovalService {
 		this.addApprovalLine(approvalVO);
 	}
 
+	/**
+	 * 결재 삭제
+	 * 
+	 * @param approvalVO
+	 * @throws Exception
+	 */
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void deleteApproval(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		approvalVO.setUserNo(this.getUserNo());
 
 		// 결재 수정 가능한지 확인
@@ -95,18 +116,13 @@ public class ApprovalService {
 	}
 
 	/**
-	 * 결재선 삭제
+	 * 결재 수정
 	 * 
 	 * @param approvalVO
 	 * @throws Exception
 	 */
-	public void deleteApprovalLine(ApprovalVO approvalVO) throws Exception {
-		approvalMapper.deleteApprovalLine(approvalVO);
-	}
-
 	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = { Exception.class })
 	public void updateApproval(ApprovalVO approvalVO) throws Exception {
-//		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		approvalVO.setUserNo(this.getUserNo());
 
 		// 결재 수정 가능한지 확인
@@ -117,12 +133,12 @@ public class ApprovalService {
 		approvalMapper.updateApproval(approvalVO);
 
 		// 결재선 수정 처리
-		this.deleteApprovalLine(approvalVO);
+		approvalMapper.deleteApprovalLine(approvalVO);
 		this.addApprovalLine(approvalVO);
 	}
 
 	/**
-	 * 결재 상태 변경
+	 * 관리자 > 결재 상태(승인/반려) 변경
 	 * 
 	 * @param approvalLineVO
 	 * @throws Exception
@@ -137,7 +153,7 @@ public class ApprovalService {
 		approvalVO.setUserNo(userNo);
 
 		// 결재선 수정 가능한지 확인
-		if (this.isValidApproval(approvalVO) == false)
+		if (this.isValidApprovalLine(approvalVO) == false)
 			throw new ApprovalException(ApprovalException.Code.DO_NOT_UPDATE_EXCEPTION);
 
 		// 결재 상태 업데이트
@@ -168,7 +184,7 @@ public class ApprovalService {
 	}
 
 	/**
-	 * 결재|결재선 수정 가능한지 확인
+	 * 결재수정 가능한지 확인
 	 * 
 	 * @param approvalVO
 	 * @return
@@ -176,14 +192,34 @@ public class ApprovalService {
 	 */
 	public boolean isValidApproval(ApprovalVO approvalVO) throws Exception {
 		if (approvalMapper.getValidApprovalCount(approvalVO) > 0) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
+	/**
+	 * 결재선 수정 가능한지 확인
+	 * 
+	 * @param approvalVO
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean isValidApprovalLine(ApprovalVO approvalVO) throws Exception {
+		if (approvalMapper.getValidApprovalLineCount(approvalVO) > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * 로그인 정보 조회
+	 * 
+	 * @return
+	 */
 	private Integer getUserNo() {
 		UserVO userVO = (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return userVO.getUserNo(); 
+		return userVO.getUserNo();
 	}
 }
