@@ -11,11 +11,7 @@ export const api = {
 		          this.approvalVoList = data
 		        })
 		        .catch((error) => {
-		          if(typeof error.response.data.code !== 'undefined'){
-		            alert(error.response.data.message);
-		          }else{
-		            alert(this.MSG.MESG_SERVER_ERROR);
-		          }
+					this.commonError(error)
 		        })
 		        .finally(() => {
 		          this.onProgress = false
@@ -27,11 +23,7 @@ export const api = {
 		          this.adminUserList = data
 		        })
 		        .catch((error) => {
-		          if(typeof error.response.data.code !== 'undefined'){
-		            alert(error.response.data.message);
-		          }else{
-		            alert(this.MSG.MESG_SERVER_ERROR);
-		          }
+					this.commonError(error)
 		        })
 		        .finally(() => {
 		          this.onProgress = false
@@ -47,11 +39,7 @@ export const api = {
 		          this.endTime = approvalVo.endTime
 		        })
 		        .catch((error) => {
-		          if(typeof error.response.data.code !== 'undefined'){
-		            alert(error.response.data.message);
-		          }else{
-		            alert(this.MSG.MESG_SERVER_ERROR);
-		          }
+					this.commonError(error)
 		        })
 		        .finally(() => {
 		          this.onProgress = false
@@ -116,11 +104,7 @@ export const api = {
 		        	window.location.href='/list'
 		        })
 				.catch((error) => {
-					if(typeof error.response.data.code !== 'undefined'){
-						alert(error.response.data.message);
-					}else{
-						alert(this.MSG.MESG_SERVER_ERROR);
-					}
+					this.commonError(error)
 				})
 				.finally(() => {
 					this.onProgress = false
@@ -142,14 +126,7 @@ export const api = {
 		        	window.location.href='/list'
 				})
 				.catch((error) => {
-					if(typeof error.response.data.code !== 'undefined'){
-						alert(error.response.data.message);
-						if(error.response.data.code === 'E1006'){
-				        	window.location.href='/list'
-						}
-					}else{
-						alert(this.MSG.MESG_SERVER_ERROR);
-					}
+					this.commonError(error)
 				})
 				.finally(() => {
 					this.onProgress = false
@@ -167,21 +144,21 @@ export const api = {
 					window.location.href='/list'
 				})
 				.catch((error) => {
-					if(typeof error.response.data.code !== 'undefined'){
-						alert(error.response.data.message);
-						if(error.response.data.code === 'E1006'){
-				        	window.location.href='/list'
-						}
-					}else{
-						alert(this.MSG.MESG_SERVER_ERROR);
-					}
+					this.commonError(error)
 				})
 				.finally(() => {
 					this.onProgress = false
 				});
 		},
-		isValidApproval: function() {
-
+		commonError: function(error) {
+			if(typeof error.response.data.code !== 'undefined'){
+				alert(error.response.data.message);
+				if(error.response.data.code === 'E1006'){
+		        	window.location.href='/list'
+				}
+			}else{
+				alert(this.MSG.MESG_SERVER_ERROR);
+			}
 		},
 	},
 	computed: {},
