@@ -66,10 +66,13 @@ INSERT INTO approval.user (user_id, password, role, reg_time, mod_time) VALUES (
 
 
 
-### Frontend > 터미널 환경
+### git > 터미널 환경
 ```
 git clone https://github.com/piazza100/approval.git
+```
 
+### Frontend > 터미널 환경
+```
 cd front
 npm install
 npm run dev
