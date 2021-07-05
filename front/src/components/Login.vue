@@ -8,7 +8,7 @@
 			<div>아이디<input name="login" id="id" type="text" value="" maxlength="" v-model.trim="userId"></div>
       <div>비밀번호<input name="login" id="pw" type="password" value="" v-model.trim="password" @keyup.enter="login(userId, password)"></div>
 
-      <div><button type="button" onclick="" @click="login(userId, password)">로그인</button></div>
+      <div><button type="button" onclick="" @click="login(userId, password)">로그인 1</button></div>
 	</div>
 	<Footer/>
 
