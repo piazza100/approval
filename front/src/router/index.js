@@ -8,6 +8,10 @@ import List from '@/components/List'
 import View from '@/components/View'
 import Write from '@/components/Write'
 
+
+
+
+
 Vue.use(Router)
 store.getters.isAuthenticated
 
