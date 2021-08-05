@@ -1,5 +1,6 @@
 package com.approval.demo.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -74,7 +75,7 @@ public class ApprovalController {
 	@PostMapping(value = "/add")
 	public ResponseEntity<?> add(@RequestBody @Valid ApprovalVO approvalVO) throws Exception {
 		this.approvalService.addApproval(approvalVO);
-		return ResponseEntity.ok("Y");
+		return ResponseEntity.ok(new HashMap<String,String>(){{put("result", "Y");}});
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class ApprovalController {
 			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
 		}
 		this.approvalService.updateApproval(approvalVO);
-		return ResponseEntity.ok("Y");
+		return ResponseEntity.ok(new HashMap<String,String>(){{put("result", "Y");}});
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class ApprovalController {
 			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
 		}
 		this.approvalService.updateApprovalLine(approvalLineVO);
-		return ResponseEntity.ok("Y");
+		return ResponseEntity.ok(new HashMap<String,String>(){{put("result", "Y");}});
 	}
 
 	/**
@@ -122,7 +123,7 @@ public class ApprovalController {
 			throw new ApprovalException(ApprovalException.Code.NULL_PARAM_EXCEPTION);
 		}
 		this.approvalService.deleteApproval(approvalVO);
-		return ResponseEntity.ok("Y");
+		return ResponseEntity.ok(new HashMap<String,String>(){{put("result", "Y");}});
 	}
 
 }
