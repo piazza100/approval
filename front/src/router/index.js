@@ -8,9 +8,7 @@ import List from '@/components/List'
 import View from '@/components/View'
 import Write from '@/components/Write'
 
-
-
-
+// test 1
 
 Vue.use(Router)
 store.getters.isAuthenticated
