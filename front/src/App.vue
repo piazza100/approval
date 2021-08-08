@@ -4,6 +4,8 @@
   </div>
 </template>
 
+// test 1
+
 <script>
 export default {
   name: 'App'
