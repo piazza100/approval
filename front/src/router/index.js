@@ -8,6 +8,13 @@ import List from '@/components/List'
 import View from '@/components/View'
 import Write from '@/components/Write'
 
+
+
+
+//sss
+
+//kkkk222
+
 // test 1
 
 Vue.use(Router)
